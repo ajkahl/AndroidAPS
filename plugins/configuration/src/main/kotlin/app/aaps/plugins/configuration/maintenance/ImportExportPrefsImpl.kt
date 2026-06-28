@@ -325,6 +325,14 @@ class ImportExportPrefsImpl @Inject constructor(
         var resultOk = false // Assume result was not OK unless acknowledged
 
         try {
+            // val entries: MutableMap<String, String> = mutableMapOf()
+            // for ((key, value) in sp.getAll()) {
+            //     if (preferences.isExportableKey(key))
+            //         entries[key] = value.toString()
+            //     else
+            //         aapsLogger.warn(LTag.CORE, "Not exportable key: $key $value")
+            // }
+            // val prefs = Prefs(entries, prepareMetadata(context))
             val entries: MutableMap<String, String> = mutableMapOf()
             for ((key, value) in sp.getAll()) {
                 if (preferences.isExportableKey(key))
@@ -332,7 +340,14 @@ class ImportExportPrefsImpl @Inject constructor(
                 else
                     aapsLogger.warn(LTag.CORE, "Not exportable key: $key $value")
             }
+            // Force every AAPS objective to be exported as completed
+            val objDone = (dateUtil.now() - T.days(7).msecs()).toString()
+            for (name in listOf("config", "usage", "exam", "openloop", "maxbasal", "maxiobzero", "maxiob", "autosens", "smb", "auto")) {
+                entries["Objectives_started_$name"] = objDone
+                entries["Objectives_accomplished_$name"] = objDone
+            }
             val prefs = Prefs(entries, prepareMetadata(context))
+            
             encryptedPrefsFormat.savePreferences(newFile, prefs, password)
             resultOk = true // Assuming export was executed successfully (or it would have thrown an exception)
 
