@@ -346,6 +346,16 @@ class ImportExportPrefsImpl @Inject constructor(
                 entries["Objectives_started_$name"] = objDone
                 entries["Objectives_accomplished_$name"] = objDone
             }
+            // Exam objective is satisfied per-question — mark every exam answer correct
+            for (q in listOf(
+                "prerequisites", "prerequisites2", "basaltest", "dia", "isf", "ic", "hypott",
+                "profileswitch", "profileswitch2", "profileswitchtime", "profileswitch4",
+                "exercise", "exercise2", "noisycgm", "pumpdisconnect", "insulin", "sensitivity",
+                "objectives", "objectives2", "update", "troubleshooting", "wrongcarbs", "wronginsulin",
+                "iob", "cob1", "cob2", "cob3", "breadgrams", "extendedcarbs", "nsclient", "otherMedicationWarning"
+            )) {
+                entries["ExamTask_$q"] = "true"
+            }
             val prefs = Prefs(entries, prepareMetadata(context))
             
             encryptedPrefsFormat.savePreferences(newFile, prefs, password)
